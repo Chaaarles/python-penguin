@@ -90,7 +90,7 @@ def enemyVisible(body):
 def chooseAction(body):
     action = PASS
     action = moveTowardsCenterOfMap(body)
-    action = enemyVisible
+    action = enemyVisible(body)
     return action
 
 
