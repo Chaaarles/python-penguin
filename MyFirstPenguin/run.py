@@ -87,6 +87,30 @@ def enemyVisible(body):
     return moveTowardsPoint(body, targetPos[0], targetPos[1])
 
 
+def toAttackOrNot(body):
+    xPos = body["you"]["x"]
+    yPos = body["you"]["y"]
+    direction = body["you"]["direction"]
+
+    enemyX = body["enemies"][0]["x"]
+    enemyY = body["enemies"][0]["y"]
+    enemyD = body["enemies"][0]["direction"]
+
+    if abs(yPos) > abs(enemyY):
+        action = ROTATE_LEFT
+        return action
+    elif abs(yPos) < abs(enemyY):
+        action = ROTATE_RIGHT
+        return action
+    else:
+        if body["you"]["strength"] > body["enemy"]["strength"]:
+                action = SHOOT
+                return action
+        else:
+            action = moveTowardsCenterOfMap(body)
+            return action
+
+
 def chooseAction(body):
     action = PASS
     action = moveTowardsCenterOfMap(body)
