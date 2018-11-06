@@ -10,16 +10,22 @@ RETREAT = "retreat"
 SHOOT = "shoot"
 PASS = "pass"
 
-MOVE_UP =  {"top" : ADVANCE, "bottom" : ROTATE_LEFT, "right" : ROTATE_LEFT ,"left" : ROTATE_RIGHT }
-MOVE_DOWN =  {"top" : ROTATE_LEFT, "bottom" : ADVANCE, "right" : ROTATE_RIGHT ,"left" : ROTATE_LEFT }
-MOVE_RIGHT = {"top" : ROTATE_RIGHT, "bottom" : ROTATE_LEFT, "right" : ADVANCE ,"left" : ROTATE_LEFT }
-MOVE_LEFT = {"top" : ROTATE_LEFT, "bottom" : ROTATE_RIGHT, "right" : ROTATE_RIGHT,"left" : ADVANCE }
+MOVE_UP = {"top": ADVANCE, "bottom": ROTATE_LEFT,
+           "right": ROTATE_LEFT, "left": ROTATE_RIGHT}
+MOVE_DOWN = {"top": ROTATE_LEFT, "bottom": ADVANCE,
+             "right": ROTATE_RIGHT, "left": ROTATE_LEFT}
+MOVE_RIGHT = {"top": ROTATE_RIGHT, "bottom": ROTATE_LEFT,
+              "right": ADVANCE, "left": ROTATE_LEFT}
+MOVE_LEFT = {"top": ROTATE_LEFT, "bottom": ROTATE_RIGHT,
+             "right": ROTATE_RIGHT, "left": ADVANCE}
+
 
 def doesCellContainWall(walls, x, y):
     for wall in walls:
         if wall["x"] == x and wall["y"] == y:
             return True
     return False
+
 
 def wallInFrontOfPenguin(body):
     xValueToCheckForWall = body["you"]["x"]
@@ -36,6 +42,7 @@ def wallInFrontOfPenguin(body):
         xValueToCheckForWall += 1
     return doesCellContainWall(body["walls"], xValueToCheckForWall, yValueToCheckForWall)
 
+
 def moveTowardsPoint(body, pointX, pointY):
     penguinPositionX = body["you"]["x"]
     penguinPositionY = body["you"]["y"]
@@ -43,7 +50,7 @@ def moveTowardsPoint(body, pointX, pointY):
     bodyDirection = body["you"]["direction"]
 
     if penguinPositionX < pointX:
-        plannedAction =  MOVE_RIGHT[bodyDirection]
+        plannedAction = MOVE_RIGHT[bodyDirection]
     elif penguinPositionX > pointX:
         plannedAction = MOVE_LEFT[bodyDirection]
     elif penguinPositionY < pointY:
@@ -55,15 +62,37 @@ def moveTowardsPoint(body, pointX, pointY):
         plannedAction = SHOOT
     return plannedAction
 
+
 def moveTowardsCenterOfMap(body):
     centerPointX = math.floor(body["mapWidth"] / 2)
     centerPointY = math.floor(body["mapHeight"] / 2)
     return moveTowardsPoint(body, centerPointX, centerPointY)
 
+
+def enemyVisible(body):
+    xPos = body["you"]["x"]
+    yPos = body["you"]["y"]
+    direction = body["you"]["direction"]
+
+    enemyX = body["enemies"][0]["x"]
+    enemyY = body["enemies"][0]["y"]
+
+    targetPos = [xPos, yPos]
+
+    if abs(xPos - enemyX) > abs(yPos - enemyY):
+        targetPos = [xPos, enemyY]
+    else:
+        targetPos = [enemyX, yPos]
+
+    return moveTowardsPoint(body, targetPos[0], targetPos[1])
+
+
 def chooseAction(body):
     action = PASS
+    action = enemyVisible
     action = moveTowardsCenterOfMap(body)
     return action
+
 
 env = os.environ
 req_params_query = env['REQ_PARAMS_QUERY']
@@ -74,7 +103,7 @@ returnObject = {}
 if req_params_query == "info":
     returnObject["name"] = "Gunnlaug Ormstunge"
     returnObject["team"] = "Team Epic Battle Royale"
-elif req_params_query == "command":    
+elif req_params_query == "command":
     body = json.loads(open(env["req"], "r").read())
     returnObject["command"] = chooseAction(body)
 
