@@ -1,3 +1,5 @@
+<h2>API lenke: https://epic-battle-royale.azurewebsites.net/api/MyFirstPenguin</h2>
+
 <h1>Student Royale</h1>
 Hvordan komme i gang med Python.
 <h2>Steg 1:</h2>
